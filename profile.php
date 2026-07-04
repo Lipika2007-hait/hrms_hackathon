@@ -7,168 +7,183 @@ if(!isset($_SESSION['employee_id'])){
     exit();
 }
 
-$id = $_SESSION['employee_id'];
+$logged_id = $_SESSION['employee_id'];
 
-$query = mysqli_query($conn,"
-SELECT * FROM employees
-WHERE id='$id'
-LIMIT 1
-");
+// get logged user
+$sessionUser = mysqli_fetch_assoc(mysqli_query($conn,"
+SELECT * FROM employees WHERE id='$logged_id'
+"));
 
-$user = mysqli_fetch_assoc($query);
+// if viewing someone else (admin click employee card)
+$view_id = isset($_GET['id']) ? $_GET['id'] : $logged_id;
+
+$user = mysqli_fetch_assoc(mysqli_query($conn,"
+SELECT * FROM employees WHERE id='$view_id'
+"));
+
+// UPDATE PROFILE
+if(isset($_POST['update_profile'])){
+
+    $is_admin = ($sessionUser['role'] == "admin" || $sessionUser['role'] == "hr");
+
+    // common editable fields
+    $phone = $_POST['phone'];
+    $address = $_POST['address'];
+
+    // admin editable fields
+    if($is_admin){
+
+        $full_name = $_POST['full_name'];
+        $email = $_POST['email'];
+        $department = $_POST['department'];
+        $job_title = $_POST['job_title'];
+        $manager = $_POST['manager'];
+        $tax_percent = $_POST['tax_percent'];
+
+        $sql = "UPDATE employees SET
+            full_name='$full_name',
+            email='$email',
+            phone='$phone',
+            address='$address',
+            department='$department',
+            job_title='$job_title',
+            manager='$manager',
+            tax_percent='$tax_percent'
+            WHERE id='$view_id'";
+
+    } else {
+
+        // employee limited update
+        $sql = "UPDATE employees SET
+            phone='$phone',
+            address='$address'
+            WHERE id='$view_id'";
+    }
+
+    mysqli_query($conn, $sql);
+
+    header("Location: employee_profile.php?id=$view_id");
+    exit();
+}
 ?>
 
+
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>My Profile</title>
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<title>Employee Profile</title>
 
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,Helvetica,sans-serif;
-}
-
 body{
+font-family:Arial;
 background:#f4f7fb;
-padding:40px;
+padding:30px;
 }
 
 .container{
-max-width:700px;
+max-width:800px;
 margin:auto;
-background:#fff;
-border-radius:15px;
-padding:35px;
-box-shadow:0 8px 20px rgba(0,0,0,.12);
-}
-
-.title{
-text-align:center;
-margin-bottom:30px;
-color:#2563EB;
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,.1);
 }
 
 .avatar{
-width:110px;
-height:110px;
-margin:0 auto 25px;
+width:90px;
+height:90px;
 border-radius:50%;
 background:#2563EB;
-color:#fff;
+color:white;
 display:flex;
 justify-content:center;
 align-items:center;
-font-size:42px;
-font-weight:bold;
-}
-
-.form-group{
-margin-bottom:18px;
-}
-
-label{
-display:block;
-margin-bottom:6px;
-font-weight:bold;
-color:#444;
+font-size:35px;
+margin:auto;
 }
 
 input{
 width:100%;
-padding:12px;
+padding:10px;
+margin:8px 0;
 border:1px solid #ccc;
-border-radius:8px;
-background:#f8f8f8;
-font-size:15px;
+border-radius:6px;
 }
 
-.back-btn{
-display:inline-block;
-margin-top:20px;
-padding:12px 22px;
-background:#2563EB;
-color:#fff;
-text-decoration:none;
-border-radius:8px;
+label{
 font-weight:bold;
 }
 
-.back-btn:hover{
-background:#1E40AF;
+button{
+background:#2563EB;
+color:white;
+padding:10px 15px;
+border:none;
+border-radius:6px;
+cursor:pointer;
 }
-
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
-<h2 class="title">My Profile</h2>
-
 <div class="avatar">
 <?php echo strtoupper(substr($user['full_name'],0,1)); ?>
 </div>
 
+<h2 style="text-align:center;">Employee Profile</h2>
 
-<div class="form-group">
-<label>Company Name</label>
-<input type="text" value="<?php echo htmlspecialchars($user['company_name']); ?>" readonly>
-</div>
+<form method="POST">
 
-<div class="form-group">
 <label>Full Name</label>
-<input type="text" value="<?php echo htmlspecialchars($user['full_name']); ?>" readonly>
-</div>
+<input type="text" name="full_name"
+value="<?= $user['full_name']; ?>"
+<?= ($sessionUser['role']=="employee") ? "readonly" : ""; ?>>
 
-<div class="form-group">
-<label>Email Address</label>
-<input type="text" value="<?php echo htmlspecialchars($user['email']); ?>" readonly>
-</div>
+<label>Email</label>
+<input type="text" name="email"
+value="<?= $user['email']; ?>"
+<?= ($sessionUser['role']=="employee") ? "readonly" : ""; ?>>
 
-<div class="form-group">
-<label>Phone Number</label>
-<input type="text" value="<?php echo htmlspecialchars($user['phone']); ?>" readonly>
-</div>
+<label>Phone</label>
+<input type="text" name="phone"
+value="<?= $user['phone']; ?>">
 
-<div class="form-group">
-<label>Login ID</label>
-<input type="text" value="<?php echo htmlspecialchars($user['login_id']); ?>" readonly>
-</div>
+<label>Address</label>
+<input type="text" name="address"
+value="<?= $user['address'] ?? ''; ?>">
 
-<div class="form-group">
-<label>Role</label>
-<input type="text" value="<?php echo htmlspecialchars($user['role']); ?>" readonly>
-</div>
+<label>Department</label>
+<input type="text" name="department"
+value="<?= $user['department'] ?? ''; ?>"
+<?= ($sessionUser['role']=="employee") ? "readonly" : ""; ?>>
 
-<div class="form-group">
-<label>Attendance Status</label>
-<input type="text" value="<?php echo htmlspecialchars($user['attendance_status']); ?>" readonly>
-</div>
+<label>Job Title</label>
+<input type="text" name="job_title"
+value="<?= $user['job_title'] ?? ''; ?>"
+<?= ($sessionUser['role']=="employee") ? "readonly" : ""; ?>>
 
-<div class="form-group">
-<label>Last Activity</label>
-<input type="text"
-value="<?php echo !empty($user['last_action_time']) ? date('d M Y, h:i A', strtotime($user['last_action_time'])) : 'No Activity'; ?>"
-readonly>
-</div>
+<label>Manager</label>
+<input type="text" name="manager"
+value="<?= $user['manager'] ?? ''; ?>"
+<?= ($sessionUser['role']=="employee") ? "readonly" : ""; ?>>
 
-<a href="emp_dashboard.php" class="back-btn">
-<i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-</a>
+<label>Tax %</label>
+<input type="text" name="tax_percent"
+value="<?= $user['tax_percent'] ?? 0; ?>"
+<?= ($sessionUser['role']=="employee") ? "readonly" : ""; ?>>
+
+<br>
+
+<?php if($sessionUser['role']=="admin" || $sessionUser['role']=="hr"){ ?>
+<button type="submit" name="update_profile">Update Profile</button>
+<?php } else { ?>
+<button type="submit" name="update_profile">Save Changes</button>
+<?php } ?>
+
+</form>
 
 </div>
 
