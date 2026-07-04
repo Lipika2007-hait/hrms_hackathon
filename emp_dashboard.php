@@ -270,7 +270,7 @@ font-weight:bold;
 <div class="menu">
 <a href="emp_dashboard.php">Employees</a>
 <a href="attendance.php">Attendance</a>
-
+<a href="emp_leave.php">Leave</a>
 </div>
 
 </div>
