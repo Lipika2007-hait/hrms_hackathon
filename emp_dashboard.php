@@ -269,8 +269,10 @@ font-weight:bold;
 
 <div class="menu">
 <a href="emp_dashboard.php">Employees</a>
-<a href="attendance.php">Attendance</a>
+<a href="emp_attendance.php">Attendance</a>
 <a href="emp_leave.php">Leave</a>
+<a href="emp_payroll.php">PAYROLL</a>
+
 </div>
 
 </div>

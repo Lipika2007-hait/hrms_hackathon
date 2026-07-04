@@ -119,7 +119,10 @@ color:black;
 
 <div class="menu">
 <a href="admin_dashboard.php">Employees</a>
-<a href="attendance.php">Attendance</a>
+<a href="admin_attendance.php">Attendance</a>
+<a href="admin_leave.php">Leave</a>
+<a href="admin_payroll.php">PAYROLL</a>
+
 
 </div>
 
@@ -133,7 +136,7 @@ color:black;
 
 <?php while($emp = mysqli_fetch_assoc($employees)) { ?>
 
-<a href="employee_profile.php?id=<?php echo $emp['id']; ?>">
+<a href="profile.php?id=<?php echo $emp['id']; ?>">
 
 <div class="card">
 
