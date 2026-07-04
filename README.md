@@ -39,3 +39,63 @@ The project is developed as part of a hackathon using PHP and MySQL.
 6. XAMPP
 7. Git
 8. Github
+
+---
+## 🚀 How to Run the Project
+
+1. Install XAMPP.
+2. Start Apache and MySQL.
+3. Copy the project folder into the `htdocs` directory.
+4. Create a database in phpMyAdmin.
+5. Import the SQL file.
+6. Open the project in your browser using localhost.
+
+---
+
+## 👥 User Roles
+
+### HR
+- Login
+- Manage Employees
+- View Employee Details
+- Approve Leave Requests
+- Manage Attendance
+
+### Employee
+- Register
+- Login
+- View Dashboard
+- Update Profile
+- Apply for Leave
+- View Attendance
+
+---
+
+## 🔒 Security Features
+- Secure Login
+- Session Management
+- Database Connectivity
+- Input Validation
+
+---
+
+## 📈 Future Enhancements
+- Payroll Management
+- Email Notifications
+- Performance Tracking
+- Department Management
+- Report Generation
+- Mobile Responsive Design
+
+---
+
+## 👨‍💻 Team Members
+- Lipika – Backend Development
+- Team Member 2 – README Documentation
+- Team Member 3 – README Documentation
+
+---
+
+## 📄 License
+
+This project is developed for educational and hackathon purposes.
